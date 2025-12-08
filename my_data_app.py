@@ -1,174 +1,70 @@
-import streamlit as st
-import pandas as pd
-import requests
-from bs4 import BeautifulSoup as bs
-import re
-import unicodedata
-
-# ======================================================
-# FUNCTION : CLEAN PRICE
-# ======================================================
-def clean_price(raw):
-    """Nettoie un prix comme '3 500 000 FCFA' → 3500000."""
-    if not raw:
-        return None
-    raw = unicodedata.normalize("NFKC", raw)
-    raw = raw.replace("FCFA", "").replace("CFA", "")
-    digits = re.sub(r"[^0-9]", "", raw)
-    if digits == "":
-        return None
-    return int(digits)
-
-
-# ======================================================
-# SCRAPER GENERIC
-# ======================================================
-def scrape(url, mode):
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                      "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
-
-    res = requests.get(url, headers=headers)
-    soup = bs(res.content, "html.parser")
-    cards = soup.find_all("div", class_="listing-card__content p-2")
-
-    data = []
-
-    for card in cards:
-        try:
-            # URL annonce
-            a = card.find("a")
-            annonce_url = "https://dakar-auto.com" + a["href"] if a else None
-
-            # Brand
-            brand_tag = card.find("h2", class_="listing-card__header__title mb-md-2 mb-0")
-            brand = brand_tag.get_text(strip=True) if brand_tag else "Introuvable"
-
-            # Adresse
-            adress_tag = card.find("div", class_="col-12 entry-zone-address")
-            adress = adress_tag.get_text(strip=True) if adress_tag else "Introuvable"
-
-            # Prix
-            price_tag = card.find("h3", class_="listing-card__header__price font-weight-bold text-uppercase mb-0")
-            if price_tag:
-                price = clean_price(price_tag.get_text(strip=True))
-            else:
-                price = None
-
-            # Owner
-            owner_tag = card.find("p", class_="time-author m-0")
-            owner = owner_tag.get_text(strip=True) if owner_tag else "Inconnu"
-
-            # Détails (motos only)
-            details_blocks = card.find_all("div", class_="col-12 listing-card__properties d-none d-sm-block")
-            details = []
-            for blk in details_blocks:
-                for li in blk.find_all("li"):
-                    details.append(li.get_text(strip=True))
-
-            km = details[1] if len(details) > 1 else None
-
-            dic = {
-                "Brand": brand,
-                "Address": adress,
-                "Price": price,
-                "Owner": owner,
-                "Kilometers": km,
-                "URL": annonce_url
-            }
-
-            data.append(dic)
-
-        except Exception:
-            continue
-
-    return pd.DataFrame(data)
-
-
-# ======================================================
-# SCRAPING URLs
-# ======================================================
-URL_VOITURES = "https://dakar-auto.com/senegal/voitures-4"
-URL_MOTOS = "https://dakar-auto.com/senegal/motos-and-scooters-3"
-URL_LOCATIONS = "https://dakar-auto.com/senegal/location-de-voitures-19"
-
-
-# ======================================================
-# STREAMLIT UI
-# ======================================================
-st.title("🚗📊 Dakar-Auto Scraper App")
-st.write("Scraping : voitures • motos • location")
-
-choice = st.selectbox(
-    "Sélectionnez une catégorie",
-    ["Voitures", "Motos", "Location de voitures"]
-)
-
-if st.button("Scraper maintenant"):
-    with st.spinner("Scraping en cours..."):
-
-        if choice == "Voitures":
-            df = scrape(URL_VOITURES, mode="cars")
-
-        elif choice == "Motos":
-            df = scrape(URL_MOTOS, mode="motos")
-
-        else:
-            df = scrape(URL_LOCATIONS, mode="rent")
-
-    st.success(f"{len(df)} annonces trouvées !")
-    st.dataframe(df)
-
-    # Téléchargement CSV
-    csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button(
-        label="Télécharger CSV",
-        data=csv,
-        file_name=f"{choice.lower().replace(' ', '_')}.csv",
-        mime="text/csv"
-    )
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import filedialog
+import shutil
 import os
-import subprocess
-import sys
 
-# --- Fonction pour ouvrir un fichier selon l'OS ---
-def open_file(path):
-    if not os.path.exists(path):
-        messagebox.showerror("Erreur", f"Fichier introuvable : {path}")
+# ----------------------------
+# CONFIGURATION DES FICHIERS
+# ----------------------------
+FILE_VOITURES = "annonces_voitures.csv"
+FILE_MOTOS = "annonces_motos.csv"
+FILE_LOCATIONS = "annonces_locations.csv"
+
+
+# ----------------------------
+# FONCTION POUR ENREGISTRER UN CSV
+# ----------------------------
+def telecharger_fichier(fichier_source):
+    if not os.path.exists(fichier_source):
+        print(f"⚠ Le fichier {fichier_source} est introuvable.")
         return
 
-    try:
-        if sys.platform.startswith('win'):         # Windows
-            os.startfile(path)
-        elif sys.platform.startswith('darwin'):    # macOS
-            subprocess.call(['open', path])
-        else:                                      # Linux
-            subprocess.call(['xdg-open', path])
-    except Exception as e:
-        messagebox.showerror("Erreur", str(e))
+    destination = filedialog.asksaveasfilename(
+        initialfile=fichier_source,
+        defaultextension=".csv",
+        filetypes=[("CSV Files", "*.csv")]
+    )
+
+    if destination:
+        shutil.copy(fichier_source, destination)
+        print(f"✔ Fichier enregistré : {destination}")
 
 
-# --- Interface Tkinter ---
-root = tk.Tk()
-root.title("Ouverture de fichiers CSV")
-root.geometry("350x200")
+# ----------------------------
+# INTERFACE TKINTER
+# ----------------------------
+app = tk.Tk()
+app.title("Téléchargement des données Dakar-Auto")
+app.geometry("400x300")
 
-# --- Tes trois fichiers CSV ---
-file1 = "annonces_voitures.csv"
-file2 = "annonces_motos.csv"
-file3 = "annonces_locations.csv"
+label = tk.Label(app, text="Choisissez un fichier à télécharger :", font=("Arial", 14))
+label.pack(pady=20)
 
-# --- Boutons ---
-btn1 = tk.Button(root, text="Ouvrir Voitures", width=25, command=lambda: open_file(file1))
-btn2 = tk.Button(root, text="Ouvrir Motos", width=25, command=lambda: open_file(file2))
-btn3 = tk.Button(root, text="Ouvrir Locations", width=25, command=lambda: open_file(file3))
+btn_voitures = tk.Button(
+    app,
+    text="Télécharger les VOITURES",
+    font=("Arial", 12),
+    width=30,
+    command=lambda: telecharger_fichier(FILE_VOITURES)
+)
+btn_voitures.pack(pady=5)
 
-btn1.pack(pady=10)
-btn2.pack(pady=10)
-btn3.pack(pady=10)
+btn_motos = tk.Button(
+    app,
+    text="Télécharger les MOTOS & SCOOTERS",
+    font=("Arial", 12),
+    width=30,
+    command=lambda: telecharger_fichier(FILE_MOTOS)
+)
+btn_motos.pack(pady=5)
 
-root.mainloop()
+btn_locations = tk.Button(
+    app,
+    text="Télécharger les LOCATIONS",
+    font=("Arial", 12),
+    width=30,
+    command=lambda: telecharger_fichier(FILE_LOCATIONS)
+)
+btn_locations.pack(pady=5)
 
+app.mainloop()
