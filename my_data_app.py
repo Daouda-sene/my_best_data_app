@@ -167,67 +167,6 @@ st.download_button(
 
 
 
-import requests
-import pandas as pd
-import matplotlib.pyplot as plt
-
-# ------------------------------------------------------
-# 1) CONFIGURATION
-# ------------------------------------------------------
-
-KOBOTOOLBOX_TOKEN = "TON_TOKEN_ICI"   # <-- Mets ton token API ici
-FORM_ID = "TON_FORM_ID_ICI"           # <-- ID du projet/formulaire
-BASE_URL = "https://ee.kobotoolbox.org/x/CtjUrcKt"
-
-headers = {
-    "Authorization": f"Token {KOBOTOOLBOX_TOKEN}"
-}
-
-# ------------------------------------------------------
-# 2) RÉCUPÉRER LES DONNÉES DU FORMULAIRE
-# ------------------------------------------------------
-
-url = f"{BASE_URL}/assets/{FORM_ID}/data.json"
-
-response = requests.get(url, headers=headers)
-
-import streamlit as st
-
-if response.status_code != 200:
-    st.error("Erreur API KoBoToolbox")
-    st.code(response.text)  # affiche la vraie réponse de l’API
-    st.stop()
-
-data = response.json()["results"]
-
-# ------------------------------------------------------
-# 3) CONVERTIR EN DATAFRAME
-# ------------------------------------------------------
-
-df = pd.DataFrame(data)
-
-print("Aperçu des données :")
-print(df.head())
-
-# ------------------------------------------------------
-# 4) EXEMPLE DE VISUALISATION
-#    (ex : distribution des réponses d'une question)
-# ------------------------------------------------------
-
-col = "q1"   # mets ici le nom de la question à visualiser
-
-if col in df.columns:
-    df[col].value_counts().plot(kind='bar')
-    plt.title(f"Distribution de la question : {col}")
-    plt.xlabel("Réponse")
-    plt.ylabel("Nombre")
-    plt.show()
-else:
-    print(f"⚠️ La question '{col}' n'existe pas dans le dataset.")
-
-
-
-
 
 
 
@@ -255,4 +194,5 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
