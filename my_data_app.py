@@ -1,70 +1,54 @@
-import tkinter as tk
-from tkinter import filedialog
-import shutil
-import os
+import streamlit as st
+import pandas as pd
 
 # ----------------------------
-# CONFIGURATION DES FICHIERS
+# TITRE
 # ----------------------------
-FILE_VOITURES = "annonces_voitures.csv"
-FILE_MOTOS = "annonces_motos.csv"
-FILE_LOCATIONS = "annonces_locations.csv"
+st.title("Téléchargement des données Dakar-Auto")
+
+st.write("Cliquez sur un bouton pour télécharger le fichier correspondant.")
+
+# ----------------------------
+# CHARGEMENT DES FICHIERS CSV
+# ----------------------------
+def load_csv(path):
+    try:
+        return pd.read_csv(path)
+    except:
+        st.error(f"⚠ Impossible de charger : {path}")
+        return None
 
 
-# ----------------------------
-# FONCTION POUR ENREGISTRER UN CSV
-# ----------------------------
-def telecharger_fichier(fichier_source):
-    if not os.path.exists(fichier_source):
-        print(f"⚠ Le fichier {fichier_source} est introuvable.")
-        return
+df_voitures = load_csv("annonces_voitures.csv")
+df_motos = load_csv("annonces_motos.csv")
+df_locations = load_csv("annonces_locations.csv")
 
-    destination = filedialog.asksaveasfilename(
-        initialfile=fichier_source,
-        defaultextension=".csv",
-        filetypes=[("CSV Files", "*.csv")]
+# ----------------------------
+# BOUTONS DE TÉLÉCHARGEMENT
+# ----------------------------
+
+if df_voitures is not None:
+    st.download_button(
+        label="📥 Télécharger les VOITURES",
+        data=df_voitures.to_csv(index=False).encode("utf-8"),
+        file_name="annonces_voitures.csv",
+        mime="text/csv"
     )
 
-    if destination:
-        shutil.copy(fichier_source, destination)
-        print(f"✔ Fichier enregistré : {destination}")
+if df_motos is not None:
+    st.download_button(
+        label="📥 Télécharger les MOTOS & SCOOTERS",
+        data=df_motos.to_csv(index=False).encode("utf-8"),
+        file_name="annonces_motos.csv",
+        mime="text/csv"
+    )
 
+if df_locations is not None:
+    st.download_button(
+        label="📥 Télécharger les LOCATIONS",
+        data=df_locations.to_csv(index=False).encode("utf-8"),
+        file_name="annonces_locations.csv",
+        mime="text/csv"
+    )
 
-# ----------------------------
-# INTERFACE TKINTER
-# ----------------------------
-app = tk.Tk()
-app.title("Téléchargement des données Dakar-Auto")
-app.geometry("400x300")
-
-label = tk.Label(app, text="Choisissez un fichier à télécharger :", font=("Arial", 14))
-label.pack(pady=20)
-
-btn_voitures = tk.Button(
-    app,
-    text="Télécharger les VOITURES",
-    font=("Arial", 12),
-    width=30,
-    command=lambda: telecharger_fichier(FILE_VOITURES)
-)
-btn_voitures.pack(pady=5)
-
-btn_motos = tk.Button(
-    app,
-    text="Télécharger les MOTOS & SCOOTERS",
-    font=("Arial", 12),
-    width=30,
-    command=lambda: telecharger_fichier(FILE_MOTOS)
-)
-btn_motos.pack(pady=5)
-
-btn_locations = tk.Button(
-    app,
-    text="Télécharger les LOCATIONS",
-    font=("Arial", 12),
-    width=30,
-    command=lambda: telecharger_fichier(FILE_LOCATIONS)
-)
-btn_locations.pack(pady=5)
-
-app.mainloop()
+st.success("Interface chargée avec succès !")
