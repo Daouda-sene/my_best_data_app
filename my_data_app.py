@@ -129,51 +129,38 @@ if st.button("Scraper maintenant"):
         mime="text/csv"
     )
 
-import tkinter as tk
-from tkinter import messagebox
-import os
-import subprocess
-import platform
+import streamlit as st
 
-# Fonction pour ouvrir un fichier selon le système
-def open_file(path):
-    if not os.path.exists(path):
-        messagebox.showerror("Erreur", f"Le fichier n'existe pas : {path}")
-        return
+# Lecture des fichiers
+with open("data/moto_auto.csv", "rb") as f:
+    csv1 = f.read()
 
-    system = platform.system()
+with open("data/motos.csv", "rb") as f:
+    csv2 = f.read()
 
-    try:
-        if system == "Windows":
-            os.startfile(path)
-        elif system == "Darwin":  # macOS
-            subprocess.call(["open", path])
-        else:  # Linux
-            subprocess.call(["xdg-open", path])
-    except Exception as e:
-        messagebox.showerror("Erreur", str(e))
+with open("data/voiture_data.csv", "rb") as f:
+    csv3 = f.read()
 
-# Chemins vers tes fichiers
-file1 = "data/moto_auto.csv"
-file2 = "data/motos.csv"
-file3 = "data/voiture_data.csv"
+st.title("Téléchargement des fichiers CSV")
 
-# Interface Tkinter
-root = tk.Tk()
-root.title("Ouvrir mes fichiers CSV")
-root.geometry("300x200")
+st.download_button(
+    label="📄 Télécharger fichier 1",
+    data=csv1,
+    file_name="fichier1.csv",
+    mime="text/csv"
+)
 
-btn1 = tk.Button(root, text="Ouvrir fichier 1", command=lambda: open_file(file1), width=25)
-btn1.pack(pady=10)
+st.download_button(
+    label="📄 Télécharger fichier 2",
+    data=csv2,
+    file_name="fichier2.csv",
+    mime="text/csv"
+)
 
-btn2 = tk.Button(root, text="Ouvrir fichier 2", command=lambda: open_file(file2), width=25)
-btn2.pack(pady=10)
-
-btn3 = tk.Button(root, text="Ouvrir fichier 3", command=lambda: open_file(file3), width=25)
-btn3.pack(pady=10)
-
-root.mainloop()
-
-
-
+st.download_button(
+    label="📄 Télécharger fichier 3",
+    data=csv3,
+    file_name="fichier3.csv",
+    mime="text/csv"
+)
 
