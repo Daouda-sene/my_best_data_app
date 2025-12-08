@@ -154,9 +154,9 @@ def open_file(path):
         messagebox.showerror("Erreur", str(e))
 
 # Chemins vers tes fichiers
-file1 = "data/fichier1.csv"
-file2 = "data/fichier2.csv"
-file3 = "data/fichier3.csv"
+file1 = "data/moto_auto.csv"
+file2 = "data/motos.csv"
+file3 = "data/voiture_data.csv"
 
 # Interface Tkinter
 root = tk.Tk()
@@ -173,6 +173,7 @@ btn3 = tk.Button(root, text="Ouvrir fichier 3", command=lambda: open_file(file3)
 btn3.pack(pady=10)
 
 root.mainloop()
+
 
 
 
