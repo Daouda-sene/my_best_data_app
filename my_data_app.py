@@ -191,8 +191,12 @@ url = f"{BASE_URL}/assets/{FORM_ID}/data.json"
 
 response = requests.get(url, headers=headers)
 
+import streamlit as st
+
 if response.status_code != 200:
-    raise Exception("Erreur API KoBoToolbox :", response.text)
+    st.error("Erreur API KoBoToolbox")
+    st.code(response.text)  # affiche la vraie réponse de l’API
+    st.stop()
 
 data = response.json()["results"]
 
@@ -220,4 +224,5 @@ if col in df.columns:
     plt.show()
 else:
     print(f"⚠️ La question '{col}' n'existe pas dans le dataset.")
+
 
