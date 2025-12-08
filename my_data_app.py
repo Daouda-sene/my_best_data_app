@@ -1,47 +1,130 @@
 import streamlit as st
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup as bs
+import re
+import unicodedata
+
+# ======================================================
+# FUNCTION : CLEAN PRICE
+# ======================================================
+def clean_price(raw):
+    """Nettoie un prix comme '3 500 000 FCFA' → 3500000."""
+    if not raw:
+        return None
+    raw = unicodedata.normalize("NFKC", raw)
+    raw = raw.replace("FCFA", "").replace("CFA", "")
+    digits = re.sub(r"[^0-9]", "", raw)
+    if digits == "":
+        return None
+    return int(digits)
 
 
-st.markdown("<h1 style='text-align: center; color: black;'>MY DATA APP</h1>", unsafe_allow_html=True)
+# ======================================================
+# SCRAPER GENERIC
+# ======================================================
+def scrape(url, mode):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
 
-st.markdown("""
-This app allows you to download scraped data on motocycles from expat-dakar 
-* **Python libraries:** base64, pandas, streamlit
-* **Data source:** [Expat-Dakar](https://www.expat-dakar.com/).
-""")
+    res = requests.get(url, headers=headers)
+    soup = bs(res.content, "html.parser")
+    cards = soup.find_all("div", class_="listing-card__content p-2")
+
+    data = []
+
+    for card in cards:
+        try:
+            # URL annonce
+            a = card.find("a")
+            annonce_url = "https://dakar-auto.com" + a["href"] if a else None
+
+            # Brand
+            brand_tag = card.find("h2", class_="listing-card__header__title mb-md-2 mb-0")
+            brand = brand_tag.get_text(strip=True) if brand_tag else "Introuvable"
+
+            # Adresse
+            adress_tag = card.find("div", class_="col-12 entry-zone-address")
+            adress = adress_tag.get_text(strip=True) if adress_tag else "Introuvable"
+
+            # Prix
+            price_tag = card.find("h3", class_="listing-card__header__price font-weight-bold text-uppercase mb-0")
+            if price_tag:
+                price = clean_price(price_tag.get_text(strip=True))
+            else:
+                price = None
+
+            # Owner
+            owner_tag = card.find("p", class_="time-author m-0")
+            owner = owner_tag.get_text(strip=True) if owner_tag else "Inconnu"
+
+            # Détails (motos only)
+            details_blocks = card.find_all("div", class_="col-12 listing-card__properties d-none d-sm-block")
+            details = []
+            for blk in details_blocks:
+                for li in blk.find_all("li"):
+                    details.append(li.get_text(strip=True))
+
+            km = details[1] if len(details) > 1 else None
+
+            dic = {
+                "Brand": brand,
+                "Address": adress,
+                "Price": price,
+                "Owner": owner,
+                "Kilometers": km,
+                "URL": annonce_url
+            }
+
+            data.append(dic)
+
+        except Exception:
+            continue
+
+    return pd.DataFrame(data)
 
 
-# Function for loading the data
-def load_(dataframe, title, key) :
-    st.markdown("""
-    <style>
-    div.stButton {text-align:center}
-    </style>""", unsafe_allow_html=True)
-
-    if st.button(title,key):
-      
-        st.subheader('Display data dimension')
-        st.write('Data dimension: ' + str(dataframe.shape[0]) + ' rows and ' + str(dataframe.shape[1]) + ' columns.')
-        st.dataframe(dataframe)
-
-# define some styles rely to the box
-st.markdown('''<style> .stButton>button {
-    font-size: 12px;
-    height: 3em;
-    width: 25em;
-}</style>''', unsafe_allow_html=True)
-
-          
-# load the data
-load_(pd.read_csv('data/motos_scooters1.csv'), 'Motocycles data 1', '1')
-load_(pd.read_csv('data/motos_scooters2.csv'), 'Motocycles data 2', '2')
-load_(pd.read_csv('data/motos_scooters3.csv'), 'Motocycles data 3', '3')
-load_(pd.read_csv('data/motos_scooters4.csv'), 'Motocycles data 4', '4')
-load_(pd.read_csv('data/motos_scooters5.csv'), 'Motocycles data 5', '5')
+# ======================================================
+# SCRAPING URLs
+# ======================================================
+URL_VOITURES = "https://dakar-auto.com/senegal/voitures-4"
+URL_MOTOS = "https://dakar-auto.com/senegal/motos-and-scooters-3"
+URL_LOCATIONS = "https://dakar-auto.com/senegal/location-de-voitures-19"
 
 
+# ======================================================
+# STREAMLIT UI
+# ======================================================
+st.title("🚗📊 Dakar-Auto Scraper App")
+st.write("Scraping : voitures • motos • location")
 
+choice = st.selectbox(
+    "Sélectionnez une catégorie",
+    ["Voitures", "Motos", "Location de voitures"]
+)
 
- 
+if st.button("Scraper maintenant"):
+    with st.spinner("Scraping en cours..."):
 
+        if choice == "Voitures":
+            df = scrape(URL_VOITURES, mode="cars")
 
+        elif choice == "Motos":
+            df = scrape(URL_MOTOS, mode="motos")
+
+        else:
+            df = scrape(URL_LOCATIONS, mode="rent")
+
+    st.success(f"{len(df)} annonces trouvées !")
+    st.dataframe(df)
+
+    # Téléchargement CSV
+    csv = df.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        label="Télécharger CSV",
+        data=csv,
+        file_name=f"{choice.lower().replace(' ', '_')}.csv",
+        mime="text/csv"
+    )
