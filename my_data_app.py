@@ -217,3 +217,56 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Ton DataFrame
+df = pd.DataFrame({
+    "Brand": [
+        "Renault Oroch 2021",
+        "Bentley Brooklands 2020",
+        "Hyundai Santa Fe 2016",
+        "Citroen C4 2017",
+        "Hyundai Tucson 2018"
+    ],
+    "Adress": [
+        "Nord Foire,Dakar",
+        "Dieuppeul Derklé,Dakar",
+        "Ouest Foire,Dakar",
+        "Sicap Dieuppeul,Dakar",
+        "Mbour,Thiès"
+    ],
+    "Price": [6, 18500000, 5450000, 5700000, 8500],
+    "Owner": [
+        "Par GABYAUTO GAYE",
+        "Par Rose DIOMPY",
+        "Par Rose DIOMPY",
+        "Par Rose DIOMPY",
+        "Par Ibou SARR"
+    ]
+})
+
+# ============
+# 1. Plot des prix
+# ============
+
+plt.figure(figsize=(10,5))
+plt.bar(df["Brand"], df["Price"])
+plt.xticks(rotation=80)
+plt.ylabel("Prix (FCFA)")
+plt.title("Prix des véhicules")
+plt.tight_layout()
+plt.show()
+
+# ============
+# 2. Nombre d’annonces par vendeur (Owner)
+# ============
+
+plt.figure(figsize=(8,4))
+df["Owner"].value_counts().plot(kind="bar")
+plt.title("Nombre d’annonces par propriétaire")
+plt.ylabel("Nombre d'annonces")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
