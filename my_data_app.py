@@ -128,3 +128,47 @@ if st.button("Scraper maintenant"):
         file_name=f"{choice.lower().replace(' ', '_')}.csv",
         mime="text/csv"
     )
+import tkinter as tk
+from tkinter import messagebox
+import os
+import subprocess
+import sys
+
+# --- Fonction pour ouvrir un fichier selon l'OS ---
+def open_file(path):
+    if not os.path.exists(path):
+        messagebox.showerror("Erreur", f"Fichier introuvable : {path}")
+        return
+
+    try:
+        if sys.platform.startswith('win'):         # Windows
+            os.startfile(path)
+        elif sys.platform.startswith('darwin'):    # macOS
+            subprocess.call(['open', path])
+        else:                                      # Linux
+            subprocess.call(['xdg-open', path])
+    except Exception as e:
+        messagebox.showerror("Erreur", str(e))
+
+
+# --- Interface Tkinter ---
+root = tk.Tk()
+root.title("Ouverture de fichiers CSV")
+root.geometry("350x200")
+
+# --- Tes trois fichiers CSV ---
+file1 = "annonces_voitures.csv"
+file2 = "annonces_motos.csv"
+file3 = "annonces_locations.csv"
+
+# --- Boutons ---
+btn1 = tk.Button(root, text="Ouvrir Voitures", width=25, command=lambda: open_file(file1))
+btn2 = tk.Button(root, text="Ouvrir Motos", width=25, command=lambda: open_file(file2))
+btn3 = tk.Button(root, text="Ouvrir Locations", width=25, command=lambda: open_file(file3))
+
+btn1.pack(pady=10)
+btn2.pack(pady=10)
+btn3.pack(pady=10)
+
+root.mainloop()
+
