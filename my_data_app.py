@@ -226,3 +226,33 @@ else:
     print(f"⚠️ La question '{col}' n'existe pas dans le dataset.")
 
 
+
+
+
+
+
+
+import streamlit as st
+
+st.title("Ouvrir mon Google Form")
+
+form_url = "https://docs.google.com/forms/d/e/1FAIpQLSeYZJAwHVc9PaSNHkHdojrK9vyRYfH-tiq76JtFjWBH3GVnJg/viewform?usp=header"
+
+st.markdown(
+    f"""
+    <a href="{form_url}" target="_blank">
+        <button style="
+            background-color:#1a73e8;
+            color:white;
+            padding:10px 20px;
+            border:none;
+            border-radius:6px;
+            font-size:16px;
+            cursor:pointer;">
+            📄 Ouvrir mon Google Form
+        </button>
+    </a>
+    """,
+    unsafe_allow_html=True
+)
+
