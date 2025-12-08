@@ -217,6 +217,9 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
+
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -246,27 +249,23 @@ df = pd.DataFrame({
     ]
 })
 
-# ============
-# 1. Plot des prix
-# ============
-
-plt.figure(figsize=(10,5))
+# ============ 1. Plot des prix ============
+plt.figure(figsize=(10, 5))
 plt.bar(df["Brand"], df["Price"])
 plt.xticks(rotation=80)
 plt.ylabel("Prix (FCFA)")
 plt.title("Prix des véhicules")
 plt.tight_layout()
-plt.show()
+plt.savefig("price_plot.png")   # <<< IMPORTANT
+plt.close()
 
-# ============
-# 2. Nombre d’annonces par vendeur (Owner)
-# ============
-
-plt.figure(figsize=(8,4))
+# ============ 2. Nombre d’annonces par vendeur ============
+plt.figure(figsize=(8, 4))
 df["Owner"].value_counts().plot(kind="bar")
 plt.title("Nombre d’annonces par propriétaire")
 plt.ylabel("Nombre d'annonces")
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.show()
+plt.savefig("owner_plot.png")   # <<< IMPORTANT
+plt.close()
 
