@@ -195,4 +195,25 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.title("Ouvrir kobotoolbox")
+
+form_url = "https://ee.kobotoolbox.org/x/CtjUrcKt"
+
+st.markdown(
+    f"""
+    <a href="{form_url}" target="_blank">
+        <button style="
+            background-color:#1a73e8;
+            color:white;
+            padding:10px 20px;
+            border:none;
+            border-radius:6px;
+            font-size:16px;
+            cursor:pointer;">
+            📄 Ouvrir kobotoolbox
+        </button>
+    </a>
+    """,
+    unsafe_allow_html=True
+)
 
