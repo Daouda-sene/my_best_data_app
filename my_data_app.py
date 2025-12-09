@@ -220,6 +220,7 @@ st.markdown(
 
 
 
+import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -249,23 +250,31 @@ df = pd.DataFrame({
     ]
 })
 
-# ============ 1. Plot des prix ============
-plt.figure(figsize=(10, 5))
-plt.bar(df["Brand"], df["Price"])
-plt.xticks(rotation=80)
-plt.ylabel("Prix (FCFA)")
-plt.title("Prix des véhicules")
-plt.tight_layout()
-plt.savefig("price_plot.png")   # <<< IMPORTANT
-plt.close()
+# ============= TITRE DE LA PAGE ==================
+st.title("📊 Dashboard Dakar Auto (Data Cleaning + Visualisation)")
 
-# ============ 2. Nombre d’annonces par vendeur ============
-plt.figure(figsize=(8, 4))
-df["Owner"].value_counts().plot(kind="bar")
-plt.title("Nombre d’annonces par propriétaire")
-plt.ylabel("Nombre d'annonces")
-plt.xticks(rotation=45)
-plt.tight_layout()
-plt.savefig("owner_plot.png")   # <<< IMPORTANT
-plt.close()
+# ============= AFFICHAGE DU DATAFRAME ============
+st.subheader("📄 Données nettoyées")
+st.dataframe(df)
 
+# ============= PLOT 1 : PRIX ================
+st.subheader("💰 Prix des véhicules")
+
+fig1, ax1 = plt.subplots(figsize=(10, 5))
+ax1.bar(df["Brand"], df["Price"])
+ax1.set_xticklabels(df["Brand"], rotation=80)
+ax1.set_ylabel("Prix (FCFA)")
+ax1.set_title("Prix des véhicules")
+
+st.pyplot(fig1)
+
+# ============= PLOT 2 : ANNONCES PAR OWNER ============
+st.subheader("👤 Nombre d’annonces par vendeur")
+
+fig2, ax2 = plt.subplots(figsize=(8, 4))
+df["Owner"].value_counts().plot(kind="bar", ax=ax2)
+ax2.set_title("Nombre d’annonces par propriétaire")
+ax2.set_ylabel("Nombre d'annonces")
+ax2.set_xticklabels(df["Owner"].value_counts().index, rotation=45)
+
+st.pyplot(fig2)
