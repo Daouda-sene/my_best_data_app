@@ -334,6 +334,43 @@ st.dataframe(df)
 # ============= PLOT 1 : PRIX ================
 st.subheader("💰 Prix des motos")
 
+
+
+
+
+import streamlit as st
+import pandas as pd
+
+# Ton DataFrame
+df = pd.DataFrame({
+    "Brand": [
+        "Ford ESCAPE-SE 2013",
+        "Ford scape 2013",
+        "Ford Edge 2017",
+        "Jeep grand-cherokee 2016",
+        "Ford Fusion 2014"
+    ],
+    "Address": [
+        "Guédiawaye,Dakar",
+        "Guédiawaye,Dakar",
+        "Guédiawaye,Dakar",
+        "Cambérène,Dakar",
+        "Médina,Dakar",
+    ],
+    "Price": [490000, 490000, 490000, 490000, 490000],
+    "Owner": [
+        "Par TERANGUA  BII",
+        "Par TERANGUA  BII",
+        "Par Mouhamed  Sene",
+        "Par Mouhamed  Sene",
+        "Par Mouhamed  Sene"
+    ]
+})
+
+st.title("Liste des véhicules")
+st.dataframe(df, use_container_width=True)
+
+
 fig1, ax1 = plt.subplots(figsize=(10, 5))
 ax1.bar(df["Brand"], df["Price"])
 ax1.set_xticklabels(df["Brand"], rotation=80)
@@ -360,4 +397,5 @@ ax3.set_xticklabels(df["Brand"], rotation=80)
 ax3.set_ylabel("Kilométrage (km)")
 ax3.set_title("Kilométrage des motos")
 st.pyplot(fig3)
+
 
