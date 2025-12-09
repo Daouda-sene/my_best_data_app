@@ -102,7 +102,9 @@ if st.button("Scraper maintenant"):
     with st.spinner("Scraping en cours..."):
 
         if choice == "Voitures":
-            df = scrape(URL_VOITURES, mode="cars")
+            nb = st.number_input("Nombre de pages à scraper :", min_value=1, max_value=50, value=5)
+            df = scrape(URL_VOITURES, mode="cars", nb_pages=nb)
+
 
         elif choice == "Motos":
             df = scrape(URL_MOTOS, mode="motos")
@@ -439,6 +441,7 @@ ax3.set_xticklabels(df["Brand"], rotation=80)
 ax3.set_ylabel("Kilométrage (km)")
 ax3.set_title("Kilométrage des motos")
 st.pyplot(fig3)
+
 
 
 
