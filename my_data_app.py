@@ -107,9 +107,11 @@ if st.button("Scraper maintenant"):
 
 
         elif choice == "Motos":
+            nb = st.number_input("Nombre de pages à scraper :", min_value=1, max_value=50, value=5)
             df = scrape(URL_MOTOS, mode="motos", nb_pages=nb)
 
         else:
+            nb = st.number_input("Nombre de pages à scraper :", min_value=1, max_value=50, value=5)
             df = scrape(URL_LOCATIONS, mode="rent", nb_pages=nb)
 
     st.success(f"{len(df)} annonces trouvées !")
@@ -441,6 +443,7 @@ ax3.set_xticklabels(df["Brand"], rotation=80)
 ax3.set_ylabel("Kilométrage (km)")
 ax3.set_title("Kilométrage des motos")
 st.pyplot(fig3)
+
 
 
 
