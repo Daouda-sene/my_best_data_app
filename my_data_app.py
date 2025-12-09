@@ -336,10 +336,9 @@ st.subheader("💰 Prix des motos")
 
 
 
-
-
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # Ton DataFrame
 df = pd.DataFrame({
@@ -367,10 +366,13 @@ df = pd.DataFrame({
     ]
 })
 
+# 🔥 AJOUT OBLIGATOIRE
+df["Kilometers"] = [120000, 150000, 110000, 180000, 140000]
+
 st.title("Liste des véhicules")
 st.dataframe(df, use_container_width=True)
 
-
+# ========= PLOT 1 ==========
 fig1, ax1 = plt.subplots(figsize=(10, 5))
 ax1.bar(df["Brand"], df["Price"])
 ax1.set_xticklabels(df["Brand"], rotation=80)
@@ -378,7 +380,7 @@ ax1.set_ylabel("Prix (FCFA)")
 ax1.set_title("Prix des motos")
 st.pyplot(fig1)
 
-# ============= PLOT 2 : ANNONCES PAR OWNER ============
+# ========= PLOT 2 ==========
 st.subheader("👤 Nombre d’annonces par vendeur (Owner)")
 
 fig2, ax2 = plt.subplots(figsize=(8, 4))
@@ -388,7 +390,7 @@ ax2.set_ylabel("Nombre d'annonces")
 ax2.set_xticklabels(df["Owner"].value_counts().index, rotation=45)
 st.pyplot(fig2)
 
-# ============= PLOT 3 : KILOMETRAGE ================
+# ========= PLOT 3 ==========
 st.subheader("🛣️ Kilométrage des motos")
 
 fig3, ax3 = plt.subplots(figsize=(10, 5))
@@ -397,5 +399,8 @@ ax3.set_xticklabels(df["Brand"], rotation=80)
 ax3.set_ylabel("Kilométrage (km)")
 ax3.set_title("Kilométrage des motos")
 st.pyplot(fig3)
+
+
+
 
 
