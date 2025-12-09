@@ -23,67 +23,60 @@ def clean_price(raw):
 # ======================================================
 # SCRAPER GENERIC
 # ======================================================
-def scrape(url, mode):
+def scrape(url, mode, nb_pages):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                       "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
 
-    res = requests.get(url, headers=headers)
-    soup = bs(res.content, "html.parser")
-    cards = soup.find_all("div", class_="listing-card__content p-2")
+    all_data = []
 
-    data = []
+    for page in range(1, nb_pages + 1):
+        paged_url = f"{url}?page={page}"
+        res = requests.get(paged_url, headers=headers)
+        soup = bs(res.content, "html.parser")
 
-    for card in cards:
-        try:
-            # URL annonce
-            a = card.find("a")
-            annonce_url = "https://dakar-auto.com" + a["href"] if a else None
+        cards = soup.find_all("div", class_="listing-card__content p-2")
+        if not cards:
+            break
 
-            # Brand
-            brand_tag = card.find("h2", class_="listing-card__header__title mb-md-2 mb-0")
-            brand = brand_tag.get_text(strip=True) if brand_tag else "Introuvable"
+        for card in cards:
+            try:
+                # ===== Extraction =====
+                a = card.find("a")
+                annonce_url = "https://dakar-auto.com" + a["href"] if a else None
 
-            # Adresse
-            adress_tag = card.find("div", class_="col-12 entry-zone-address")
-            adress = adress_tag.get_text(strip=True) if adress_tag else "Introuvable"
+                brand_tag = card.find("h2", class_="listing-card__header__title mb-md-2 mb-0")
+                brand = brand_tag.get_text(strip=True) if brand_tag else "Introuvable"
 
-            # Prix
-            price_tag = card.find("h3", class_="listing-card__header__price font-weight-bold text-uppercase mb-0")
-            if price_tag:
-                price = clean_price(price_tag.get_text(strip=True))
-            else:
-                price = None
+                adress_tag = card.find("div", class_="col-12 entry-zone-address")
+                adress = adress_tag.get_text(strip=True) if adress_tag else "Introuvable"
 
-            # Owner
-            owner_tag = card.find("p", class_="time-author m-0")
-            owner = owner_tag.get_text(strip=True) if owner_tag else "Inconnu"
+                price_tag = card.find("h3", class_="listing-card__header__price font-weight-bold text-uppercase mb-0")
+                price = clean_price(price_tag.get_text(strip=True)) if price_tag else None
 
-            # Détails (motos only)
-            details_blocks = card.find_all("div", class_="col-12 listing-card__properties d-none d-sm-block")
-            details = []
-            for blk in details_blocks:
-                for li in blk.find_all("li"):
-                    details.append(li.get_text(strip=True))
+                owner_tag = card.find("p", class_="time-author m-0")
+                owner = owner_tag.get_text(strip=True) if owner_tag else "Inconnu"
 
-            km = details[1] if len(details) > 1 else None
+                details_blocks = card.find_all("div", class_="col-12 listing-card__properties d-none d-sm-block")
+                details = [li.get_text(strip=True) for blk in details_blocks for li in blk.find_all("li")]
 
-            dic = {
-                "Brand": brand,
-                "Address": adress,
-                "Price": price,
-                "Owner": owner,
-                "Kilometers": km,
-                "URL": annonce_url
-            }
+                km = details[1] if len(details) > 1 else None
 
-            data.append(dic)
+                all_data.append({
+                    "Brand": brand,
+                    "Address": adress,
+                    "Price": price,
+                    "Owner": owner,
+                    "Kilometers": km,
+                    "URL": annonce_url
+                })
 
-        except Exception:
-            continue
+            except:
+                continue
 
-    return pd.DataFrame(data)
+    return pd.DataFrame(all_data)
+
 
 
 # ======================================================
@@ -446,6 +439,7 @@ ax3.set_xticklabels(df["Brand"], rotation=80)
 ax3.set_ylabel("Kilométrage (km)")
 ax3.set_title("Kilométrage des motos")
 st.pyplot(fig3)
+
 
 
 
