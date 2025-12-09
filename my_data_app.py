@@ -278,3 +278,86 @@ ax2.set_ylabel("Nombre d'annonces")
 ax2.set_xticklabels(df["Owner"].value_counts().index, rotation=45)
 
 st.pyplot(fig2)
+
+
+
+
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import re
+
+# Nettoyage des kilomètres
+def clean_km(x):
+    # Ex: "350 km" → 350
+    digits = re.sub(r"[^0-9]", "", str(x))
+    return int(digits) if digits else None
+
+# Ton DataFrame (motos)
+df = pd.DataFrame({
+    "Brand": [
+        "SYM 125S 2023",
+        "Yamaha TMax 2023",
+        "Yamaha X-Max 2025",
+        "Honda X-ADV 2021",
+        "KTM jakarta 2025"
+    ],
+    "Adress": [
+        "Rufisque,Dakar",
+        "VDN,Dakar",
+        "Sicap Baobab,Dakar",
+        "Cambérène,Dakar",
+        "VDN,Dakar"
+    ],
+    "Price": [620000, 4300000, 800000, 810000, 220000],
+    "Owner": [
+        "Par Lamine  Ndao",
+        "Par Rose  DIOMPY",
+        "Par Rose  DIOMPY",
+        "Par Rose  DIOMPY",
+        "Par Malick konte"
+    ],
+    "Kilometers": ["1200 km", "1 km", "250 km", "350 km", "6000 km"]
+})
+
+# Nettoyer la colonne kilomètres
+df["Kilometers"] = df["Kilometers"].apply(clean_km)
+
+# ============= TITRE DE LA PAGE ==================
+st.title("🏍️ Dashboard Motos – Dakar Auto")
+
+# ============= AFFICHAGE DU DATAFRAME ============
+st.subheader("📄 Données nettoyées des motos")
+st.dataframe(df)
+
+# ============= PLOT 1 : PRIX ================
+st.subheader("💰 Prix des motos")
+
+fig1, ax1 = plt.subplots(figsize=(10, 5))
+ax1.bar(df["Brand"], df["Price"])
+ax1.set_xticklabels(df["Brand"], rotation=80)
+ax1.set_ylabel("Prix (FCFA)")
+ax1.set_title("Prix des motos")
+st.pyplot(fig1)
+
+# ============= PLOT 2 : ANNONCES PAR OWNER ============
+st.subheader("👤 Nombre d’annonces par vendeur (Owner)")
+
+fig2, ax2 = plt.subplots(figsize=(8, 4))
+df["Owner"].value_counts().plot(kind="bar", ax=ax2)
+ax2.set_title("Nombre d’annonces par propriétaire")
+ax2.set_ylabel("Nombre d'annonces")
+ax2.set_xticklabels(df["Owner"].value_counts().index, rotation=45)
+st.pyplot(fig2)
+
+# ============= PLOT 3 : KILOMETRAGE ================
+st.subheader("🛣️ Kilométrage des motos")
+
+fig3, ax3 = plt.subplots(figsize=(10, 5))
+ax3.bar(df["Brand"], df["Kilometers"])
+ax3.set_xticklabels(df["Brand"], rotation=80)
+ax3.set_ylabel("Kilométrage (km)")
+ax3.set_title("Kilométrage des motos")
+st.pyplot(fig3)
+
