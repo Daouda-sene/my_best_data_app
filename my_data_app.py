@@ -348,6 +348,7 @@ ax1.bar(df["Brand"], df["Price"])
 ax1.set_xticklabels(df["Brand"], rotation=80)
 ax1.set_ylabel("Prix (FCFA)")
 ax1.set_title("Prix des motos")
+import matplotlib
 matplotlib.use("Agg")
 st.pyplot(fig1)
 
@@ -361,6 +362,7 @@ df["Owner"].value_counts().plot(kind="bar", ax=ax2)
 ax2.set_title("Nombre d’annonces par propriétaire")
 ax2.set_ylabel("Nombre d'annonces")
 ax2.set_xticklabels(df["Owner"].value_counts().index, rotation=45)
+import matplotlib
 matplotlib.use("Agg")
 st.pyplot(fig2)
 
@@ -374,6 +376,7 @@ ax3.bar(df["Brand"], df["Kilometers"])
 ax3.set_xticklabels(df["Brand"], rotation=80)
 ax3.set_ylabel("Kilométrage (km)")
 ax3.set_title("Kilométrage des motos")
+import matplotlib
 matplotlib.use("Agg")
 st.pyplot(fig3)
 
@@ -443,6 +446,7 @@ ax3.set_xticklabels(df["Brand"], rotation=80)
 ax3.set_ylabel("Kilométrage (km)")
 ax3.set_title("Kilométrage des motos")
 st.pyplot(fig3)
+
 
 
 
