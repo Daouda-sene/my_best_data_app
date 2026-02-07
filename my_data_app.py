@@ -443,3 +443,8 @@ ax3.set_xticklabels(df["Brand"], rotation=80)
 ax3.set_ylabel("Kilométrage (km)")
 ax3.set_title("Kilométrage des motos")
 st.pyplot(fig3)
+genai.configure(api_key="AIzaSyApKc0a0_XM_O0Kkc71CD-LEf4_oMlvBVA")
+import os
+genai.configure(api_key=os.getenv("AIzaSyApKc0a0_XM_O0Kkc71CD-LEf4_oMlvBVA"))
+
+
