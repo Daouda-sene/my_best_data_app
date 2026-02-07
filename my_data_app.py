@@ -447,4 +447,28 @@ genai.configure(api_key="AIzaSyApKc0a0_XM_O0Kkc71CD-LEf4_oMlvBVA")
 import os
 genai.configure(api_key=os.getenv("AIzaSyApKc0a0_XM_O0Kkc71CD-LEf4_oMlvBVA"))
 
+import streamlit as st
+import google.generativeai as genai
+from PIL import Image
+import os
+
+genai.configure(api_key=os.getenv("AIzaSyApKc0a0_XM_O0Kkc71CD-LEf4_oMlvBVA"))
+
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+st.title("Analyse d'image avec Gemini")
+
+uploaded_file = st.file_uploader("Upload une image", type=["jpg","png","jpeg"])
+
+if uploaded_file:
+    img = Image.open(uploaded_file)
+    st.image(img)
+
+    if st.button("Analyser"):
+        response = model.generate_content([
+            "Décris cette image :",
+            img
+        ])
+        st.write(response.text)
+
 
