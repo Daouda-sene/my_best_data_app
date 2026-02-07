@@ -11,6 +11,6 @@ streamlit
 seaborn
 pybase64
 google-generativeai
-
+Pillow
 
 
