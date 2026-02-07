@@ -1,10 +1,14 @@
+streamlit
 numpy
+pandas
 bs4
 requests
+beautifulsoup4
 scipy
 matplotlib
 pandas
 streamlit
 seaborn
 pybase64
+
 
