@@ -452,36 +452,31 @@ import os
 genai.configure(api_key=os.getenv("AIzaSyApKc0a0_XM_O0Kkc71CD-LEf4_oMlvBVA"))
 
 import streamlit as st
+import google.generativeai as genai
 from PIL import Image
 import os
-from google import genai
 
-# =====================
-# API KEY
-# =====================
 API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not API_KEY:
-    st.error("Ajoute GEMINI_API_KEY dans Streamlit Secrets")
+    st.error("API key manquante")
     st.stop()
 
-client = genai.Client(api_key=API_KEY)
+genai.configure(api_key=API_KEY)
+
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 st.title("Analyse d'image avec Gemini")
 
-uploaded_file = st.file_uploader("Upload une image", type=["jpg", "png", "jpeg"])
+file = st.file_uploader("Upload une image", type=["jpg","png","jpeg"])
 
-if uploaded_file:
-    img = Image.open(uploaded_file)
+if file:
+    img = Image.open(file)
     st.image(img)
 
     if st.button("Analyser"):
         with st.spinner("Analyse..."):
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",   # modèle actuel le plus stable
-                contents=["Décris cette image en français :", img]
+            response = model.generate_content(
+                ["Décris cette image en français :", img]
             )
-
         st.write(response.text)
-
-st.write(os.getenv("GEMINI_API_KEY"))
