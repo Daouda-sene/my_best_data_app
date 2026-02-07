@@ -483,3 +483,5 @@ if uploaded_file:
             )
 
         st.write(response.text)
+
+st.write(os.getenv("GEMINI_API_KEY"))
