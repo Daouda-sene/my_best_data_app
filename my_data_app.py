@@ -4,6 +4,11 @@ import requests
 from bs4 import BeautifulSoup as bs
 import re
 import unicodedata
+import streamlit as st
+import google.generativeai as genai   # ← OBLIGATOIRE
+from PIL import Image
+import os
+
 
 # ======================================================
 # FUNCTION : CLEAN PRICE
@@ -470,5 +475,6 @@ if uploaded_file:
             img
         ])
         st.write(response.text)
+
 
 
