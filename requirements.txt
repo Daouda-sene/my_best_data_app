@@ -10,8 +10,10 @@ pandas
 streamlit
 seaborn
 pybase64
-google-genai
+google-generativeai
 Pillow
+
+
 
 
 
