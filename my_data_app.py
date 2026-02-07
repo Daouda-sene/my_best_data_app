@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup as bs
 import re
 import unicodedata
-import streamlit as st
 import google.generativeai as genai   # ← OBLIGATOIRE
 from PIL import Image
 import os
@@ -457,7 +456,7 @@ import google.generativeai as genai
 from PIL import Image
 import os
 
-genai.configure(api_key=os.getenv("AIzaSyApKc0a0_XM_O0Kkc71CD-LEf4_oMlvBVA"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -475,6 +474,7 @@ if uploaded_file:
             img
         ])
         st.write(response.text)
+
 
 
 
