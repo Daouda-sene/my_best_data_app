@@ -480,3 +480,6 @@ if file:
                 ["Décris cette image en français :", img]
             )
         st.write(response.text)
+response = model.generate_content("Dis bonjour")
+st.write(response.text)
+
