@@ -1,3 +1,39 @@
+import pandas as pd
+
+# =============================
+# 1️⃣ DONNÉES DE FATIGUE
+# =============================
+data_fatigue = pd.DataFrame({
+    "Driver": [
+        "Amadou", "Fatou", "Mamadou", "Awa", "Cheikh",
+        "Mariama", "Ibrahima", "Seynabou", "Ousmane", "Coumba"
+    ],
+    "Vehicle": [
+        "Renault Clio", "Hyundai Tucson", "Toyota Corolla", "Ford Ranger",
+        "Peugeot 208", "Kia Picanto", "Mercedes C200", "Volkswagen Golf",
+        "Suzuki Vitara", "Nissan Qashqai"
+    ],
+    "Hours Driving": [2, 5, 3, 8, 6, 4, 7, 2, 9, 1],
+    "Fatigue Level (%)": [20, 75, 35, 85, 60, 40, 70, 25, 90, 10]
+})
+
+# =============================
+# 2️⃣ DONNÉES VÉHICULES
+# =============================
+data_vehicles = pd.DataFrame({
+    "Brand": [
+        "Renault Clio 2020", "Hyundai Tucson 2018", "Toyota Corolla 2017",
+        "Ford Ranger 2016", "Peugeot 208 2019", "Kia Picanto 2021"
+    ],
+    "Owner": [
+        "Amadou", "Fatou", "Mamadou", "Awa", "Cheikh", "Mariama"
+    ],
+    "Price (FCFA)": [4500000, 12000000, 8000000, 15000000, 5000000, 3500000],
+    "Kilometers": [20000, 50000, 35000, 70000, 15000, 10000],
+    "Address": [
+        "Dakar", "Pikine", "Guédiawaye", "Mbour", "Rufisque", "Thiès"
+    ]
+})
 import streamlit as st
 
 # ============================
@@ -51,3 +87,4 @@ elif st.session_state.screen == 'alerte':
     if st.button("OK, je vais faire une pause"):
         st.session_state.screen = 'conduite'
         st.experimental_rerun()
+
