@@ -1,18 +1,8 @@
 streamlit
+tensorflow==2.15.0
 numpy
-pandas
-bs4
-requests
-beautifulsoup4
-scipy
-matplotlib
-pandas
-streamlit
-seaborn
-pybase64
-tensorflow==2.13.0
 pillow
-h5py
+
 
 
 
