@@ -4,33 +4,29 @@ import numpy as np
 from PIL import Image
 import os
 
-MODEL_PATH = "saved_model"   # dossier
+MODEL_PATH = "keras_model.h5"
+
+st.title("Détection fatigue chauffeur")
 
 if not os.path.exists(MODEL_PATH):
-    st.error("Le dossier saved_model est introuvable !")
+    st.error("keras_model.h5 introuvable ! Mets-le dans le projet GitHub.")
 else:
     model = tf.keras.models.load_model(MODEL_PATH)
 
-    labels = ["fatigue", "non_fatigue"]
+    file = st.file_uploader("Uploader une image", type=["jpg", "png", "jpeg"])
 
-    st.title("Détection fatigue chauffeur")
-    pred = model.predict(img, verbose=0)
-
-
-    uploaded_file = st.file_uploader("Uploader une image", type=["jpg", "png", "jpeg"])
-
-    if uploaded_file:
-        img = Image.open(uploaded_file).convert("RGB")
-        st.image(img, caption="Image uploadée", use_column_width=True)
+    if file:
+        img = Image.open(file).convert("RGB")
+        st.image(img)
 
         img = img.resize((224, 224))
         img = np.array(img) / 255.0
         img = np.expand_dims(img, axis=0)
 
-        pred = model.predict(img)
+        pred = model.predict(img, verbose=0)
 
-        label_index = np.argmax(pred)
-        confidence = np.max(pred)
+        labels = ["fatigue", "non_fatigue"]
 
-        st.success(f"Résultat : {labels[label_index]} ({confidence*100:.1f}%)")
-
+        st.success(
+            f"Résultat : {labels[np.argmax(pred)]} ({np.max(pred)*100:.1f}%)"
+        )
