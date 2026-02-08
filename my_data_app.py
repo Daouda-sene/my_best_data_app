@@ -452,34 +452,30 @@ import os
 genai.configure(api_key=os.getenv("AIzaSyApKc0a0_XM_O0Kkc71CD-LEf4_oMlvBVA"))
 
 import streamlit as st
-import google.generativeai as genai
+import tensorflow as tf
+import numpy as np
 from PIL import Image
-import os
 
-API_KEY = os.getenv("GEMINI_API_KEY")
+# Charger modèle
+model = tf.keras.models.load_model("keras_model.h5")
 
-if not API_KEY:
-    st.error("API key manquante")
-    st.stop()
+labels = ["fatigue", "non_fatigue"]
 
-genai.configure(api_key=API_KEY)
+st.title("Détection fatigue chauffeur")
 
-model = genai.GenerativeModel("gemini-1.5-flash")
-
-st.title("Analyse d'image avec Gemini")
-
-file = st.file_uploader("Upload une image", type=["jpg","png","jpeg"])
+file = st.file_uploader("Uploader une image", type=["jpg","png","jpeg"])
 
 if file:
-    img = Image.open(file)
+    img = Image.open(file).convert("RGB")
     st.image(img)
 
-    if st.button("Analyser"):
-        with st.spinner("Analyse..."):
-            response = model.generate_content(
-                ["Décris cette image en français :", img]
-            )
-        st.write(response.text)
-response = model.generate_content("Dis bonjour")
-st.write(response.text)
+    img = img.resize((224,224))
+    img = np.array(img)/255.0
+    img = np.expand_dims(img, axis=0)
 
+    pred = model.predict(img)
+
+    label = labels[np.argmax(pred)]
+    conf = np.max(pred)
+
+    st.success(f"Résultat : {label} ({conf*100:.1f}%)")
