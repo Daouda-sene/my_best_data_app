@@ -1,0 +1,2 @@
+0 fatigue
+1 non_fatigue
