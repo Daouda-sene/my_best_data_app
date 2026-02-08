@@ -14,6 +14,8 @@ else:
     labels = ["fatigue", "non_fatigue"]
 
     st.title("Détection fatigue chauffeur")
+    pred = model.predict(img, verbose=0)
+
 
     uploaded_file = st.file_uploader("Uploader une image", type=["jpg", "png", "jpeg"])
 
@@ -31,3 +33,4 @@ else:
         confidence = np.max(pred)
 
         st.success(f"Résultat : {labels[label_index]} ({confidence*100:.1f}%)")
+
