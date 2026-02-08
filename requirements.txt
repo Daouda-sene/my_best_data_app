@@ -12,6 +12,7 @@ seaborn
 pybase64
 tensorflow==2.13.0
 pillow
+h5py
 
 
 
