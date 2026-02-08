@@ -457,7 +457,8 @@ import numpy as np
 from PIL import Image
 
 # Charger modèle
-model = tf.keras.models.load_model("keras_model.h5")
+model = tf.keras.models.load_model("saved_model")
+
 
 labels = ["fatigue", "non_fatigue"]
 
@@ -479,3 +480,4 @@ if file:
     conf = np.max(pred)
 
     st.success(f"Résultat : {label} ({conf*100:.1f}%)")
+
