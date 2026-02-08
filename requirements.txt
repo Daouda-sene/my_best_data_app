@@ -10,7 +10,7 @@ pandas
 streamlit
 seaborn
 pybase64
-tensorflow
+tensorflow==2.13.0
 pillow
 
 
